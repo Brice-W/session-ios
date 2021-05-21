@@ -794,8 +794,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         NSString *profilePictureURL = userProfile.avatarUrlPath;
         
         NSString *file = [profilePictureURL lastPathComponent];
-        BOOL useOldServer = [profilePictureURL containsString:SNFileServerAPIV2.oldServer];
-        AnyPromise *promise = [SNFileServerAPIV2 download:file useOldServer:useOldServer];
+        AnyPromise *promise = [SNFileServerAPIV2 download:file];
         
         [promise.then(^(NSData *data) {
             @synchronized(self.currentAvatarDownloads)
