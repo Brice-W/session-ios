@@ -138,6 +138,8 @@
 "CONVERSATION_SETTINGS_SEARCH" = "Chercher dans la conversation";
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Rétablir les notifications";
+/* Label for conversation subtitle when a conversation is muted*/
+"CONVERSATION_TITLE_MUTED" = "En sourdine";
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "Déplacer et mettre à l’échelle";
 /* Subtitle shown while the app is updating its database. */

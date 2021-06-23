@@ -24,6 +24,7 @@ BOOL IsNoteToSelfEnabled(void)
 @property (nonatomic, nullable) NSNumber *archivedAsOfMessageSortId;
 @property (nonatomic, copy, nullable) NSString *messageDraft;
 @property (atomic, nullable) NSDate *mutedUntilDate;
+@property (atomic) BOOL isMuted;
 
 @end
 
@@ -369,11 +370,24 @@ BOOL IsNoteToSelfEnabled(void)
 
 #pragma mark Muting
 
-- (BOOL)isMuted
+/*- (BOOL)isMuted
 {
+    return self.isMutedValue;
     NSDate *mutedUntilDate = self.mutedUntilDate;
     NSDate *now = [NSDate date];
     return (mutedUntilDate != nil && [mutedUntilDate timeIntervalSinceDate:now] > 0);
+}*/
+
+- (void)updateMuted:(BOOL)isMuted transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(TSThread *thread) {
+                                 [thread setIsMuted:isMuted];
+                             }];
+
+    [transaction addCompletionQueue:dispatch_get_main_queue() completionBlock:^{
+        [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.muteSettingUpdated object:self.uniqueId];
+    }];
 }
 
 - (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate transaction:(YapDatabaseReadWriteTransaction *)transaction

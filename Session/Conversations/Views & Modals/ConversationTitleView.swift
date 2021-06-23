@@ -86,7 +86,7 @@ final class ConversationTitleView : UIView {
     }
 
     private func getSubtitle() -> NSAttributedString? {
-        if let muteEndDate = thread.mutedUntilDate, thread.isMuted {
+        /*if let muteEndDate = thread.mutedUntilDate, thread.isMuted {
             let result = NSMutableAttributedString()
             result.append(NSAttributedString(string: "\u{e067}  ", attributes: [ .font : UIFont.ows_elegantIconsFont(10), .foregroundColor : Colors.text ]))
             let formatter = DateFormatter()
@@ -94,6 +94,11 @@ final class ConversationTitleView : UIView {
             formatter.timeStyle = .medium
             formatter.dateStyle = .medium
             result.append(NSAttributedString(string: "Muted until " + formatter.string(from: muteEndDate)))
+            return result*/
+        if thread.isMuted {
+            let result = NSMutableAttributedString()
+            result.append(NSAttributedString(string: "\u{e067}  ", attributes: [ .font : UIFont.ows_elegantIconsFont(10), .foregroundColor : Colors.text ]))
+            result.append(NSAttributedString(string: NSLocalizedString("CONVERSATION_TITLE_MUTED", comment:"")))
             return result
         } else if let thread = self.thread as? TSGroupThread {
             var userCount: UInt64?

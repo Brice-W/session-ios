@@ -507,7 +507,7 @@ CGFloat kIconViewLength = 24;
     }
     
 
-    // Mute thread section.
+    // Message sound section.
 
     if (!isNoteToSelf) {
         [mainSection
@@ -551,7 +551,96 @@ CGFloat kIconViewLength = 24;
                             vc.thread = weakSelf.thread;
                             [weakSelf.navigationController pushViewController:vc animated:YES];
                         }]];
-        [mainSection
+        
+        // Mute thread section.
+        
+        [mainSection addItem:[OWSTableItem
+                             itemWithCustomCellBlock:^{
+                                 /*OWSConversationSettingsViewController *strongSelf = weakSelf;
+                                 if (!strongSelf) {
+                                     return [UITableViewCell new];
+                                 }
+
+                                 NSString *cellTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_LABEL",
+                                                                         @"label for 'mute thread' cell in conversation settings");
+                                 UITableViewCell *cell = [strongSelf
+                                      disclosureCellWithName:cellTitle
+                                                    iconName:@"Mute"
+                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                                 OWSConversationSettingsViewController, @"mute")];
+
+                                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+                                 UISwitch *muteConversationSwitch = [UISwitch new];
+                                 muteConversationSwitch.on = strongSelf.thread.isMuted;
+                                 [muteConversationSwitch addTarget:strongSelf
+                                                             action:@selector(muteConversationSwitchDidChange:)
+                                                   forControlEvents:UIControlEventValueChanged];
+                                 cell.accessoryView = muteConversationSwitch;
+
+                                 return cell;*/
+            
+                                UITableViewCell *cell = [OWSTableItem newCell];
+                                OWSConversationSettingsViewController *strongSelf = weakSelf;
+                                OWSCAssertDebug(strongSelf);
+                                cell.preservesSuperviewLayoutMargins = YES;
+                                cell.contentView.preservesSuperviewLayoutMargins = YES;
+                                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+                                UIImageView *iconView = [strongSelf viewForIconWithName:@"Mute"];
+
+                                UILabel *rowLabel = [UILabel new];
+                                rowLabel.text = NSLocalizedString(
+                                    @"CONVERSATION_SETTINGS_MUTE_LABEL", @"label for 'mute thread' cell in conversation settings");
+                                rowLabel.textColor = LKColors.text;
+                                rowLabel.font = [UIFont systemFontOfSize:LKValues.mediumFontSize];
+                                rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+
+                                UISwitch *muteConversationSwitch = [UISwitch new];
+                                muteConversationSwitch.on = strongSelf.thread.isMuted;
+                                [muteConversationSwitch addTarget:strongSelf
+                                                            action:@selector(muteConversationSwitchDidChange:)
+                                                  forControlEvents:UIControlEventValueChanged];
+
+                                UIStackView *topRow =
+                                    [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel, muteConversationSwitch ]];
+                                topRow.spacing = strongSelf.iconSpacing;
+                                topRow.alignment = UIStackViewAlignmentCenter;
+                                [cell.contentView addSubview:topRow];
+                                [topRow autoPinEdgesToSuperviewMarginsExcludingEdge:ALEdgeBottom];
+
+                                if (self.isGroupThread)
+                                {
+                                    UILabel *subtitleLabel = [UILabel new];
+                                    if (self.isGroupThread && self.isClosedGroup)
+                                    {
+                                    subtitleLabel.text = [NSString stringWithFormat:NSLocalizedString(@"MUTE_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of muting a thread.")];
+                                    }
+                                    subtitleLabel.textColor = LKColors.text;
+                                    subtitleLabel.font = [UIFont systemFontOfSize:LKValues.smallFontSize];
+                                    subtitleLabel.numberOfLines = 0;
+                                    subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+                                    [cell.contentView addSubview:subtitleLabel];
+                                    [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topRow withOffset:8];
+                                    [subtitleLabel autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:rowLabel];
+                                    [subtitleLabel autoPinTrailingToSuperviewMargin];
+                                    [subtitleLabel autoPinBottomToSuperviewMargin];
+                                } else {
+                                    // We don't display the label in 1-1 conversations
+                                    [topRow autoPinBottomToSuperviewMargin];
+                                }
+
+                                cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
+
+                                cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                    OWSConversationSettingsViewController, @"mute");
+
+                                return cell;
+                             }
+                             customRowHeight:UITableViewAutomaticDimension
+                             actionBlock:nil]];
+        
+        /*[mainSection
             addItem:
                 [OWSTableItem
                     itemWithCustomCellBlock:^{
@@ -616,9 +705,9 @@ CGFloat kIconViewLength = 24;
                         return cell;
                     }
                     customRowHeight:UITableViewAutomaticDimension
-                    actionBlock:^{
+                    actionBlock:nil^{
                         [weakSelf showMuteUnmuteActionSheet];
-                    }]];
+                    }]*/;
     }
     // Block Conversation section.
 
@@ -967,7 +1056,7 @@ CGFloat kIconViewLength = 24;
     [self.disappearingMessagesDurationLabel.superview setNeedsLayout];
 }
 
-- (void)showMuteUnmuteActionSheet
+/*- (void)showMuteUnmuteActionSheet
 {
     // The "unmute" action sheet has no title or message; the
     // action label speaks for itself.
@@ -1087,15 +1176,50 @@ CGFloat kIconViewLength = 24;
     [actionSheet addAction:[OWSAlerts cancelAction]];
 
     [self presentAlert:actionSheet];
-}
+}*/
 
-- (void)setThreadMutedUntilDate:(nullable NSDate *)value
+/*- (void)setThreadMutedUntilDate:(nullable NSDate *)value
 {
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
         [self.thread updateWithMutedUntilDate:value transaction:transaction];
     }];
     
     [self updateTableContents];
+}*/
+
+- (void)setThreadMuted:(BOOL)isMuted
+{
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+        [self.thread updateMuted:isMuted transaction:transaction];
+    }];
+    
+    [self updateTableContents];
+}
+
+- (void)muteConversationSwitchDidChange:(id)sender
+{
+    if (![sender isKindOfClass:[UISwitch class]]) {
+        OWSFailDebug(@"Unexpected sender for block user switch: %@", sender);
+    }
+    UISwitch *muteConversationSwitch = (UISwitch *)sender;
+
+    BOOL isCurrentlyMuted = self.thread.isMuted;
+
+    __weak OWSConversationSettingsViewController *weakSelf = self;
+    if (muteConversationSwitch.isOn) {
+        OWSAssertDebug(!isCurrentlyMuted);
+        if (isCurrentlyMuted) {
+            return;
+        }
+        [weakSelf setThreadMuted:true];
+
+    } else {
+        OWSAssertDebug(isCurrentlyMuted);
+        if (!isCurrentlyMuted) {
+            return;
+        }
+        [weakSelf setThreadMuted:false];
+    }
 }
 
 - (void)copySessionID
