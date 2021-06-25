@@ -1194,6 +1194,19 @@ CGFloat kIconViewLength = 24;
     }];
     
     [self updateTableContents];
+
+    // For now we only disable push notifications for closed groups if the conversation is muted
+    if (self.isClosedGroup) {
+        TSGroupThread *gThread = (TSGroupThread *)self.thread;
+        NSString *groupPublicKey = [LKGroupUtilities getDecodedGroupID:gThread.groupModel.groupId];
+        NSString *userPublicKey = [SNGeneralUtilities getUserPublicKey];
+        if (isMuted)
+        {
+            [LKPushNotificationAPI performSubscribeFor:groupPublicKey publicKey:userPublicKey];
+        } else {
+            [LKPushNotificationAPI performUnsubscribeFor:groupPublicKey publicKey:userPublicKey];
+        }
+    }
 }
 
 - (void)muteConversationSwitchDidChange:(id)sender

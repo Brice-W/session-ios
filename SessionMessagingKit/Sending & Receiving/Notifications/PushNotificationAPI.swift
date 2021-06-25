@@ -115,4 +115,14 @@ public final class PushNotificationAPI : NSObject {
         }
         return promise
     }
+
+    @objc(performSubscribeFor:publicKey:)
+    public static func performSubscribe(for closedGroupPublicKey: String, publicKey: String) {
+        performOperation(.subscribe, for: closedGroupPublicKey, publicKey: publicKey)
+    }
+
+    @objc(performUnsubscribeFor:publicKey:)
+    public static func performUnsubscribe(for closedGroupPublicKey: String, publicKey: String) {
+        performOperation(.unsubscribe, for: closedGroupPublicKey, publicKey: publicKey)
+    }
 }
